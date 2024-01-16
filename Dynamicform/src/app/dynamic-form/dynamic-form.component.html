@@ -1,0 +1,82 @@
+<!-- Header Section -->
+<header>
+  <h1>Employee Data</h1>
+ 
+</header>
+
+<!-- Main Content Section -->
+<div class="container">
+  <h3>{{ form.formTitle }}</h3>
+  <!-- Form Section -->
+  <form [formGroup]="dynamicFormGroup" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <!-- Loop through form sections -->
+      <ng-container *ngFor="let section of form.formFields">
+        <div class="form-section">
+          <h4>{{ section.label }}</h4>
+          <!-- Loop through form controls within the section -->
+          <div *ngFor="let control of section.fields" class="form-group">
+            <!-- Text, Number, Date Controls -->
+            <div *ngIf="['text', 'number', 'date'].includes(control.type)">
+              <label>{{ control.label }}</label>
+              <input type="{{ control.type }}" [formControlName]="control.name" class="form-control" />
+              <div *ngIf="dynamicFormGroup.get(control.name)?.touched && dynamicFormGroup.get(control.name)?.hasError('required')" class="text-danger">Field is required</div>
+              <div *ngIf="dynamicFormGroup.get(control.name)?.hasError('pattern')" class="text-danger">Invalid pattern</div>
+            </div>
+
+            <!-- Select Control -->
+            <div *ngIf="control.type === 'select'">
+              <label>{{ control.label }}</label>
+              <select [formControlName]="control.name" class="form-control">
+                <option selected value="">Choose....</option>
+                <!-- Loop through options -->
+                <ng-container *ngFor="let opt of control.options">
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                </ng-container>
+              </select>
+              <div *ngIf="dynamicFormGroup.get(control.name)?.touched && dynamicFormGroup.get(control.name)?.value === ''" class="text-danger">Field is required</div>
+            </div>
+
+            <!-- Radio Control -->
+            <div *ngIf="control.type === 'radio'">
+              <label>{{ control.label }}</label>
+              <div *ngFor="let opt of control.options" class="form-check">
+                <input type="radio" [formControlName]="control.name" [value]="opt.value" class="form-check-input" [id]="opt.value" />
+                <label class="form-check-label" [for]="opt.value">{{ opt.label }}</label>
+              </div>
+              <div *ngIf="dynamicFormGroup.get(control.name)?.touched && !dynamicFormGroup.get(control.name)?.value" class="text-danger">Field is required</div>
+            </div>
+
+            <!-- Checkbox Control -->
+            <div *ngIf="control.type === 'checkbox'">
+              <div class="checkbox-section">
+                <label>{{ control.label }}</label>
+                <div *ngFor="let opt of control.options">
+                  <div class="checkbox-option">
+                    <input type="checkbox" [formControlName]="control.name" />
+                    {{ opt.value }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add other control types as needed -->
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Form Buttons Section -->
+    <div class="row">
+      <div class="col-md-6">
+        <button type="submit" class="btn btn-primary">{{ form.saveBtnTitle }}</button>
+        <button type="button" class="btn btn-secondary" (click)="onReset()">{{ form.resetBtnTitle }}</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Footer Section -->
+<footer>
+  <p>&copy; 2024 Your Website Name. All rights reserved.</p>
+</footer>
